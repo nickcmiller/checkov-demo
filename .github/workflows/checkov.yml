@@ -1,18 +1,14 @@
 name: Checkov
 
 on:
-  pull_request:
+  push:
     branches: ["main"]
-    types: [opened, synchronize, reopened]
 
 jobs:
   scan:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-
-      - name: Install Octokit
-        run: npm install @octokit/rest
 
       - name: Checkov GitHub Action
         id: checkov

@@ -23,3 +23,14 @@ jobs:
       - name: Notify on Checkov Failure
         if: steps.checkov.outputs.num_failed > 0
         run: echo "Checkov scan failed"
+      - name: Create Pull Request
+        if: steps.checkov.outputs.num_failed > 0
+        uses: peter-evans/create-pull-request@v3
+        with:
+            title: Checkov scan failed
+            commit-message: Checkov scan failed
+            branch: checkov-failed
+            body: |
+              The Checkov scan detected the following potential security issues in the Terraform code:
+              $(checkov -d /path/to/terraform/directory -o json | jq -r '.results[] | select(.status == "FAILED") | "- " + .check_id + ": " + .check_name')
+            token: ${{ secrets.GITHUB_TOKEN }}

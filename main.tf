@@ -30,6 +30,6 @@ resource "aws_s3_bucket_policy" "example" {
 POLICY
 }
 
-output "bucket_name" {
+output "bucket_name_" {
   value = aws_s3_bucket.example.id
 }

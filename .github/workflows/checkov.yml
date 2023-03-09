@@ -19,6 +19,8 @@ jobs:
         with:
           directory: .
           framework: terraform
+      - name: Print Checkov Outputs
+        run: echo "${{ toJson(steps.checkov.outputs) }}"
       - name: Create Pull Request
         if: steps.checkov.outputs.failed == 'true'
         uses: peter-evans/create-pull-request@v3

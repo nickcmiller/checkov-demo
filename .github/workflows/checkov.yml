@@ -43,7 +43,7 @@ jobs:
         # and uses the jq command to extract the necessary information
         # You may need to modify this function depending on the format of your report
         run: |
-        function getFailedCheck() {
-          failedCheck=$(jq '.runs[0].results[] | select(.level == "error") | .ruleId' "${CHECKOV_REPORT}")
-          echo "${failedCheck}"
-        }
+            function getFailedCheck() {
+              failedCheck=$(jq '.runs[0].results[] | select(.level == "error") | .ruleId' "${CHECKOV_REPORT}")
+              echo "${failedCheck}"
+            }

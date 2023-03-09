@@ -1,0 +1,29 @@
+name: Checkov
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  checkov:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install Checkov
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip
+          sudo pip3 install checkov
+
+      - name: Run Checkov
+        run: checkov -d .
+
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v3
+        with:
+          commit-message: "Checkov found issues"
+          title: "Checkov found issues"
+          body: "Checkov found issues. Please review and merge if valid."

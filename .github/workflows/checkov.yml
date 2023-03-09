@@ -11,9 +11,10 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Checkov GitHub Action
+        id: checkov
         uses: bridgecrewio/checkov-action@v12
         with:
-          output_format: cli
+          output_format: json
           soft_fail: true
 
       - name: Create Checkov Comment
@@ -23,7 +24,7 @@ jobs:
           CHECKOV_PR_TOKEN: ${{ secrets.CHECKOV_PR_TOKEN }}
         with:
           script: |
-            const output = require('child_process').execSync('checkov -d .').toString()
+            const output = '${{ steps.checkov.outputs.checkov_output }}'
             const octokit = require('@octokit/rest')()
             octokit.authenticate({
               type: 'token',

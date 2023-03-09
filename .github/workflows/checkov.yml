@@ -28,7 +28,7 @@ jobs:
         with:
           script: |
             const output = '${{ steps.checkov.outputs.checkov_output }}'
-            const octokit = require('@octokit/rest')()
+            const octokit = require('@octokit/rest')
             octokit.authenticate({
               type: 'token',
               token: process.env.CHECKOV_PR_TOKEN

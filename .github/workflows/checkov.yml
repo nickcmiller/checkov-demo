@@ -20,7 +20,7 @@ jobs:
           directory: .
           framework: terraform
       - name: Create Pull Request
-        if: steps.checkov.outputs.failed == 'failure'
+        if: steps.checkov.outputs.failed == 'true'
         uses: peter-evans/create-pull-request@v3
         with:
           title: Checkov scan failed

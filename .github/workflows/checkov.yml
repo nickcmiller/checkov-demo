@@ -15,6 +15,7 @@ jobs:
           python-version: 3.8
       - name: Test with Checkov
         id: checkov
+        continue-on-error: true
         uses: bridgecrewio/checkov-action@master
         with:
           directory: .

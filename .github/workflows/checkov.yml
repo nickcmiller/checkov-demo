@@ -20,5 +20,5 @@ jobs:
           directory: .
           framework: terraform
       - name: Notify on Checkov Failure
-        if: steps.checkov.outputs.failed == true
+        if: steps.checkov.outputs.num_failed > 0
         run: echo "Checkov scan failed"

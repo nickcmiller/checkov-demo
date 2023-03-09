@@ -10,6 +10,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Install Octokit
+        run: npm install @octokit/rest
+
       - name: Checkov GitHub Action
         id: checkov
         uses: bridgecrewio/checkov-action@v12

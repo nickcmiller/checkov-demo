@@ -20,30 +20,12 @@ jobs:
           directory: .
           framework: terraform
       - name: Create Pull Request
-        if: steps.checkov.outputs.failed == 'true'
-        uses: actions/github-script@v4
+        if: steps.checkov.outputs.failed == 'failure'
+        uses: peter-evans/create-pull-request@v3
         with:
-        github-token: ${{ secrets.CHECKOV_PR_TOKEN }}
-        script: |
-          const { data: pullRequest } = await github.pulls.create({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            title: 'Checkov scan failed',
-            body: `The Checkov scan detected potential security issues in the Terraform code. Please review the changes and make any necessary fixes. \n\n Failed Checkov check: ${getFailedCheck()}`,
-            head: 'checkov-failed',
-            base: 'main'
-          })
-          console.log(`Created pull request ${pullRequest.html_url}`)
-          
-        env:
-        CHECKOV_REPORT: ${{ steps.checkov.outputs.report }}
-        
-        # Helper function to extract the failed check from the Checkov report
-        # This example assumes that the report is in SARIF format
-        # and uses the jq command to extract the necessary information
-        # You may need to modify this function depending on the format of your report
-        run: |
-            function getFailedCheck() {
-              failedCheck=$(jq '.runs[0].results[] | select(.level == "error") | .ruleId' "${CHECKOV_REPORT}")
-              echo "${failedCheck}"
-            }
+          title: Checkov scan failed
+          commit-message: Checkov scan failed
+          branch: checkov-failed
+          body: |
+            The Checkov scan detected potential security issues in the Terraform code. Please review the changes and make any necessary fixes.
+          token: ${{ secrets.CHECKOV_PR_TOKEN }}

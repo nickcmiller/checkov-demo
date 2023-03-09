@@ -1,34 +1,30 @@
 name: Checkov
-
 on:
   push:
-    branches: [main]
-
+    branches:
+      - master
 jobs:
-  checkov:
+  build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v1
         with:
-          node-version: 16
-          
-      - name: Install Checkov
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y python3-pip
-          sudo pip3 install checkov
-
-      - name: Run Checkov
-        run: checkov -d .
-
-      - name: Create pull request
+          python-version: 3.8
+      - name: Test with Checkov
+        id: checkov
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: .
+          framework: terraform
+      - name: Create Pull Request
+        if: steps.checkov.outcome == 'failure'
         uses: peter-evans/create-pull-request@v3
         with:
-          commit-message: "Checkov found issues"
-          title: "Checkov found issues"
-          body: "Checkov found issues. Please review and merge if valid."
+          title: Checkov scan failed
+          commit-message: Checkov scan failed
+          branch: checkov-failed
+          body: |
+            The Checkov scan detected potential security issues in the Terraform code. Please review the changes and make any necessary fixes.
+          token: ${{ secrets.CHECKOV_PR_TOKEN }}

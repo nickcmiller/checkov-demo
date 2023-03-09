@@ -20,6 +20,8 @@ jobs:
         with:
           directory: .
           framework: terraform
+        env:
+          checkov-results: ${{fromJson(steps.checkov.outputs.checkov_results)}}
       - name: Print Checkov Outputs
         run: echo "${{ steps.checkov.outputs.checkov_results }}" | jq .
       - name: Create Pull Request

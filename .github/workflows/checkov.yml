@@ -20,19 +20,19 @@ jobs:
           output_format: json
           soft_fail: true
 
-      - name: Create Checkov Comment
-        uses: actions/github-script@v5
-        if: always()
-        env:
-          CHECKOV_PR_TOKEN: ${{ secrets.CHECKOV_PR_TOKEN }}
-        with:
-          script: |
-            const output = '${{ steps.checkov.outputs.checkov_output }}';
-            const { Octokit } = require("@octokit/rest");
-            const octokit = new Octokit({ auth: process.env.CHECKOV_PR_TOKEN });
-            octokit.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.payload.pull_request.number,
-              body: `Checkov Results:\n\`\`\`\n${output}\n\`\`\``
-            });
+    #   - name: Create Checkov Comment
+    #     uses: actions/github-script@v5
+    #     if: always()
+    #     env:
+    #       CHECKOV_PR_TOKEN: ${{ secrets.CHECKOV_PR_TOKEN }}
+    #     with:
+    #       script: |
+    #         const output = '${{ steps.checkov.outputs.checkov_output }}';
+    #         const { Octokit } = require("@octokit/rest");
+    #         const octokit = new Octokit({ auth: process.env.CHECKOV_PR_TOKEN });
+    #         octokit.issues.createComment({
+    #           owner: context.repo.owner,
+    #           repo: context.repo.repo,
+    #           issue_number: context.payload.pull_request.number,
+    #           body: `Checkov Results:\n\`\`\`\n${output}\n\`\`\``
+    #         });

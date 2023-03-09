@@ -3,27 +3,35 @@ name: Checkov
 on:
   push:
     branches: ["main"]
+
 jobs:
   scan:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v2
 
       - name: Checkov GitHub Action
         uses: bridgecrewio/checkov-action@v12
         with:
-          # This will add both a CLI output to the console and create a results.sarif file
-          output_format: cli,sarif
-          output_file_path: console,results.sarif
-        
-      - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@v2
-        
-        # Results are generated only on a success or failure
-        # this is required since GitHub by default won't run the next step
-        # when the previous one has failed. Security checks that do not pass will 'fail'.
-        # An alternative is to add `continue-on-error: true` to the previous step
-        # Or 'soft_fail: true' to checkov.
-        if: success() || failure()
+          output_format: cli
+          soft_fail: true
+
+      - name: Create Checkov Comment
+        uses: actions/github-script@v5
+        if: always()
+        env:
+          CHECKOV_PR_TOKEN: ${{ secrets.CHECKOV_PR_TOKEN }}
         with:
-          sarif_file: results.sarif
+          script: |
+            const output = require('child_process').execSync('checkov -d .').toString()
+            const octokit = require('@octokit/rest')()
+            octokit.authenticate({
+              type: 'token',
+              token: process.env.CHECKOV_PR_TOKEN
+            })
+            octokit.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: 'Checkov Results:\n```\n' + output + '\n```'
+            })
